@@ -4,13 +4,13 @@ import pandas as pd
 import pytest
 
 # Import the function to be tested
-from src.kratio.analyzer import analyze_text
+from src.kratio.analyzer import analyze_text_words
 
 
 # Helper class to create mock spaCy Token objects
 class MockToken:
     """
-    A simple mock object to simulate spaCy Token behavior needed for analyze_text.
+    A simple mock object to simulate spaCy Token behavior needed for analyze_text_words.
     """
 
     def __init__(self, lemma: str, is_stop: bool = False, is_punct: bool = False) -> None:
@@ -31,9 +31,9 @@ def mock_nlp():
         yield mock_nlp_obj
 
 
-def test_analyze_text_basic(mock_nlp):
+def test_analyze_text_words_basic(mock_nlp):
     """
-    Tests analyze_text with a basic sentence, ensuring correct word frequencies and densities.
+    Tests analyze_text_words with a basic sentence, ensuring correct word frequencies and densities.
     """
     # Arrange
     text = "This is a test sentence. Another test."
@@ -55,7 +55,7 @@ def test_analyze_text_basic(mock_nlp):
     mock_nlp.return_value = mock_doc  # When nlp(text) is called, return our mock_doc
 
     # Act
-    df = analyze_text(text)
+    df = analyze_text_words(text)
 
     # Assert
     expected_data = {
@@ -70,9 +70,9 @@ def test_analyze_text_basic(mock_nlp):
     pd.testing.assert_frame_equal(df, expected_df)
 
 
-def test_analyze_text_empty_string(mock_nlp):
+def test_analyze_text_words_empty_string(mock_nlp):
     """
-    Tests analyze_text with an empty input string.
+    Tests analyze_text_words with an empty input string.
     """
     # Arrange
     text = ""
@@ -81,7 +81,7 @@ def test_analyze_text_empty_string(mock_nlp):
     mock_nlp.return_value = mock_doc
 
     # Act
-    df = analyze_text(text)
+    df = analyze_text_words(text)
 
     # Assert
     # An empty DataFrame with the correct column types and index name
@@ -90,9 +90,9 @@ def test_analyze_text_empty_string(mock_nlp):
     pd.testing.assert_frame_equal(df, expected_df)
 
 
-def test_analyze_text_only_stopwords_punctuation(mock_nlp):
+def test_analyze_text_words_only_stopwords_punctuation(mock_nlp):
     """
-    Tests analyze_text with text containing only stop words and punctuation.
+    Tests analyze_text_words with text containing only stop words and punctuation.
     """
     # Arrange
     text = "This is a. The, and"
@@ -109,7 +109,7 @@ def test_analyze_text_only_stopwords_punctuation(mock_nlp):
     mock_nlp.return_value = mock_doc
 
     # Act
-    df = analyze_text(text)
+    df = analyze_text_words(text)
 
     # Assert
     expected_df = pd.DataFrame({"Frequency": pd.Series(dtype=int), "Density": pd.Series(dtype=float)})
@@ -117,9 +117,9 @@ def test_analyze_text_only_stopwords_punctuation(mock_nlp):
     pd.testing.assert_frame_equal(df, expected_df)
 
 
-def test_analyze_text_case_punctuation_lemmatization(mock_nlp):
+def test_analyze_text_words_case_punctuation_lemmatization(mock_nlp):
     """
-    Tests analyze_text's handling of mixed case, punctuation, and lemmatization.
+    Tests analyze_text_words's handling of mixed case, punctuation, and lemmatization.
     """
     # Arrange
     text = "Running, ran, RUNS. Apple, apples."
@@ -139,7 +139,7 @@ def test_analyze_text_case_punctuation_lemmatization(mock_nlp):
     mock_nlp.return_value = mock_doc
 
     # Act
-    df = analyze_text(text)
+    df = analyze_text_words(text)
 
     # Assert
     expected_data = {
@@ -153,9 +153,9 @@ def test_analyze_text_case_punctuation_lemmatization(mock_nlp):
     pd.testing.assert_frame_equal(df, expected_df)
 
 
-def test_analyze_text_empty_lemma_after_strip(mock_nlp):
+def test_analyze_text_words_empty_lemma_after_strip(mock_nlp):
     """
-    Tests analyze_text with tokens whose lemma becomes empty after stripping whitespace.
+    Tests analyze_text_words with tokens whose lemma becomes empty after stripping whitespace.
     These should be filtered out.
     """
     # Arrange
@@ -168,7 +168,7 @@ def test_analyze_text_empty_lemma_after_strip(mock_nlp):
     mock_nlp.return_value = mock_doc
 
     # Act
-    df = analyze_text(text)
+    df = analyze_text_words(text)
 
     # Assert
     expected_df = pd.DataFrame({"Frequency": pd.Series(dtype=int), "Density": pd.Series(dtype=float)})

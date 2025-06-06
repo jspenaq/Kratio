@@ -26,6 +26,14 @@ def analyze_text(text: str) -> pd.DataFrame:
 
     # Calculate keyword densities
     total_words = len(words)
+
+    # Handle the case where there are no relevant words to avoid ZeroDivisionError
+    if total_words == 0:
+        # Return an empty DataFrame with the correct column types and index name
+        empty_df = pd.DataFrame({"Frequency": pd.Series(dtype=int), "Density": pd.Series(dtype=float)})
+        empty_df.index.name = "Keyword"
+        return empty_df
+
     word_densities = word_counts / total_words * 100
 
     # Create a DataFrame

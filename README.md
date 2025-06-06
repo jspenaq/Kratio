@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a href="https://github.com/jspenaq/Kratio"><img src="https://github-production-user-asset-6210df.s3.amazonaws.com/36420972/452481397-78ec4635-5163-414e-b4e5-726a13ab349c.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250606%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250606T220440Z&X-Amz-Expires=300&X-Amz-Signature=1bb9312ecd6ae2fbe6f3daf3a5b67318f4ad4e72e01915dd7c6d5dc862f24524&X-Amz-SignedHeaders=host" alt="Kratio" width="200"></a>
+  <a href="https://github.com/jspenaq/Kratio"><img src="Kratio Logo.jpg" alt="Kratio" width="200"></a>
   <br>
   Kratio
   <br>

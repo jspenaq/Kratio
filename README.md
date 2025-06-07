@@ -35,6 +35,8 @@ cd Kratio
 
 # Install dependencies
 pip install uv
+uv sync
+uv pip install pip
 uv run spacy download en_core_web_sm
 ```
 
@@ -42,14 +44,14 @@ From your command line:
 
 ```bash
 # Run the app
-python main.py <file_path> --analysis_type <words|sentences> --top_n <number_of_keywords>
+uv run src/kratio/main.py <file_path> --analysis_type <words|sentences> --top_n <number_of_keywords>
 ```
 
 For example:
 
 ```bash
-python main.py example.txt --analysis_type words
-python main.py example.txt --analysis_type sentences --top_n 20
+uv run src/kratio/main.py example.txt --analysis_type words
+uv run src/kratio/main.py example.txt --analysis_type sentences --top_n 20
 ```
 
 ## Credits

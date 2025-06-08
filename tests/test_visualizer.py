@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pandas as pd
 import pytest
@@ -15,23 +15,25 @@ def mock_plot_modules():
     """
     # Use patch as a context manager for multiple mocks
     with (
-        patch("matplotlib.pyplot.figure") as mock_figure,
+        patch("matplotlib.pyplot.subplots") as mock_subplots,
         patch("seaborn.barplot") as mock_barplot,
-        patch("matplotlib.pyplot.xticks") as mock_xticks,
-        patch("matplotlib.pyplot.xlabel") as mock_xlabel,
-        patch("matplotlib.pyplot.ylabel") as mock_ylabel,
-        patch("matplotlib.pyplot.title") as mock_title,
+        # No need to mock specific plt. functions like xticks, xlabel, ylabel, title
+        # as we will assert calls on the mock ax object returned by subplots
         patch("matplotlib.pyplot.tight_layout") as mock_tight_layout,
         patch("matplotlib.pyplot.show") as mock_show,
     ):
         # Yield the mocked objects so tests can access them for assertions
+        # Configure mock_subplots to return a mock figure and mock axes
+        # Configure mock_subplots to return a mock figure and mock axes
+        mock_fig = MagicMock()
+        mock_ax = MagicMock()
+        mock_subplots.return_value = (mock_fig, mock_ax)
+
         yield {
-            "figure": mock_figure,
+            "subplots": mock_subplots,
+            "figure": mock_fig,
+            "ax": mock_ax,
             "barplot": mock_barplot,
-            "xticks": mock_xticks,
-            "xlabel": mock_xlabel,
-            "ylabel": mock_ylabel,
-            "title": mock_title,
             "tight_layout": mock_tight_layout,
             "show": mock_show,
         }
@@ -62,20 +64,21 @@ def test_visualize_top_keywords_basic(mock_plot_modules):
     visualize_top_keywords(df)
 
     # Assert
-    mock_plot_modules["figure"].assert_called_once_with(figsize=(12, 6))
+    mock_plot_modules["subplots"].assert_called_once_with(figsize=(12, 6))
     mock_plot_modules["barplot"].assert_called_once()
     # Verify arguments passed to sns.barplot
     args, kwargs = mock_plot_modules["barplot"].call_args
-    # The 'x' argument to seaborn.barplot is a pandas Index, not a Series.
-    # Use assert_index_equal for comparing Index objects.
-    pd.testing.assert_index_equal(kwargs["x"], expected_top_keywords.index)
-    assert kwargs["y"] == "Density"
+    # The 'y' argument to seaborn.barplot is a pandas Index, not a Series.
+    pd.testing.assert_index_equal(kwargs["y"], expected_top_keywords.index)
+    assert kwargs["x"] == "Density"
     pd.testing.assert_frame_equal(kwargs["data"], expected_top_keywords)
+    assert kwargs["orient"] == "h"
+    assert kwargs["ax"] == mock_plot_modules["ax"]
 
-    mock_plot_modules["xticks"].assert_called_once_with(rotation=45, ha="right")
-    mock_plot_modules["xlabel"].assert_called_once_with("Keyword")
-    mock_plot_modules["ylabel"].assert_called_once_with("Keyword Density (%)")
-    mock_plot_modules["title"].assert_called_once_with(f"Top {top_n} Keywords")
+    mock_plot_modules["ax"].tick_params.assert_called_once_with(axis="y", rotation=0)
+    mock_plot_modules["ax"].set_xlabel.assert_called_once_with("Density (%)")
+    mock_plot_modules["ax"].set_ylabel.assert_called_once_with("Keyword")
+    mock_plot_modules["ax"].set_title.assert_called_once_with(f"Top {top_n} Keywords")
     mock_plot_modules["tight_layout"].assert_called_once()
     mock_plot_modules["show"].assert_called_once()
 
@@ -95,19 +98,19 @@ def test_visualize_top_keywords_fewer_than_top_n(mock_plot_modules):
     visualize_top_keywords(df)
 
     # Assert
-    mock_plot_modules["figure"].assert_called_once_with(figsize=(12, 6))
+    mock_plot_modules["subplots"].assert_called_once_with(figsize=(12, 6))
     mock_plot_modules["barplot"].assert_called_once()
     args, kwargs = mock_plot_modules["barplot"].call_args
-    # The 'x' argument to seaborn.barplot is a pandas Index, not a Series.
-    # Use assert_index_equal for comparing Index objects.
-    pd.testing.assert_index_equal(kwargs["x"], expected_top_keywords.index)
-    assert kwargs["y"] == "Density"
+    pd.testing.assert_index_equal(kwargs["y"], expected_top_keywords.index)
+    assert kwargs["x"] == "Density"
     pd.testing.assert_frame_equal(kwargs["data"], expected_top_keywords)
+    assert kwargs["orient"] == "h"
+    assert kwargs["ax"] == mock_plot_modules["ax"]
 
-    mock_plot_modules["xticks"].assert_called_once_with(rotation=45, ha="right")
-    mock_plot_modules["xlabel"].assert_called_once_with("Keyword")
-    mock_plot_modules["ylabel"].assert_called_once_with("Keyword Density (%)")
-    mock_plot_modules["title"].assert_called_once_with(f"Top {top_n} Keywords")
+    mock_plot_modules["ax"].tick_params.assert_called_once_with(axis="y", rotation=0)
+    mock_plot_modules["ax"].set_xlabel.assert_called_once_with("Density (%)")
+    mock_plot_modules["ax"].set_ylabel.assert_called_once_with("Keyword")
+    mock_plot_modules["ax"].set_title.assert_called_once_with(f"Top {top_n} Keywords")
     mock_plot_modules["tight_layout"].assert_called_once()
     mock_plot_modules["show"].assert_called_once()
 
@@ -128,20 +131,19 @@ def test_visualize_top_keywords_empty_dataframe(mock_plot_modules):
     visualize_top_keywords(df)
 
     # Assert
-    mock_plot_modules["figure"].assert_called_once_with(figsize=(12, 6))
+    mock_plot_modules["subplots"].assert_called_once_with(figsize=(12, 6))
     mock_plot_modules["barplot"].assert_called_once()
     args, kwargs = mock_plot_modules["barplot"].call_args
-    # For an empty DataFrame, x will be an empty Index, data will be an empty DataFrame
-    # The 'x' argument to seaborn.barplot is a pandas Index, not a Series.
-    # Use assert_index_equal for comparing Index objects.
-    pd.testing.assert_index_equal(kwargs["x"], df.index)  # Should be the empty df's index
-    assert kwargs["y"] == "Density"
-    pd.testing.assert_frame_equal(kwargs["data"], df)  # Should be the empty df passed in
+    pd.testing.assert_index_equal(kwargs["y"], df.index)
+    assert kwargs["x"] == "Density"
+    pd.testing.assert_frame_equal(kwargs["data"], df)
+    assert kwargs["orient"] == "h"
+    assert kwargs["ax"] == mock_plot_modules["ax"]
 
-    mock_plot_modules["xticks"].assert_called_once_with(rotation=45, ha="right")
-    mock_plot_modules["xlabel"].assert_called_once_with("Keyword")
-    mock_plot_modules["ylabel"].assert_called_once_with("Keyword Density (%)")
-    mock_plot_modules["title"].assert_called_once_with(f"Top {top_n} Keywords")
+    mock_plot_modules["ax"].tick_params.assert_called_once_with(axis="y", rotation=0)
+    mock_plot_modules["ax"].set_xlabel.assert_called_once_with("Density (%)")
+    mock_plot_modules["ax"].set_ylabel.assert_called_once_with("Keyword")
+    mock_plot_modules["ax"].set_title.assert_called_once_with(f"Top {top_n} Keywords")
     mock_plot_modules["tight_layout"].assert_called_once()
     mock_plot_modules["show"].assert_called_once()
 
@@ -161,18 +163,18 @@ def test_visualize_top_keywords_custom_top_n(mock_plot_modules):
     visualize_top_keywords(df, top_n=custom_top_n)
 
     # Assert
-    mock_plot_modules["figure"].assert_called_once_with(figsize=(12, 6))
+    mock_plot_modules["subplots"].assert_called_once_with(figsize=(12, 6))
     mock_plot_modules["barplot"].assert_called_once()
     args, kwargs = mock_plot_modules["barplot"].call_args
-    # The 'x' argument to seaborn.barplot is a pandas Index, not a Series.
-    # Use assert_index_equal for comparing Index objects.
-    pd.testing.assert_index_equal(kwargs["x"], expected_top_keywords.index)
-    assert kwargs["y"] == "Density"
+    pd.testing.assert_index_equal(kwargs["y"], expected_top_keywords.index)
+    assert kwargs["x"] == "Density"
     pd.testing.assert_frame_equal(kwargs["data"], expected_top_keywords)
+    assert kwargs["orient"] == "h"
+    assert kwargs["ax"] == mock_plot_modules["ax"]
 
-    mock_plot_modules["xticks"].assert_called_once_with(rotation=45, ha="right")
-    mock_plot_modules["xlabel"].assert_called_once_with("Keyword")
-    mock_plot_modules["ylabel"].assert_called_once_with("Keyword Density (%)")
-    mock_plot_modules["title"].assert_called_once_with(f"Top {custom_top_n} Keywords")
+    mock_plot_modules["ax"].tick_params.assert_called_once_with(axis="y", rotation=0)
+    mock_plot_modules["ax"].set_xlabel.assert_called_once_with("Density (%)")
+    mock_plot_modules["ax"].set_ylabel.assert_called_once_with("Keyword")
+    mock_plot_modules["ax"].set_title.assert_called_once_with(f"Top {custom_top_n} Keywords")
     mock_plot_modules["tight_layout"].assert_called_once()
     mock_plot_modules["show"].assert_called_once()

@@ -2,6 +2,7 @@ import argparse
 
 from kratio.analyzer import analyze_text_sentences, analyze_text_words
 from kratio.file_handler import read_text_file
+from kratio.utils import display_top_keywords
 from kratio.visualizer import visualize_top_keywords
 
 
@@ -39,6 +40,7 @@ def main() -> None:
         else:
             df = analyze_text_sentences(text)
 
+        display_top_keywords(df, args.top_n)
         # Visualize the top keywords
         visualize_top_keywords(df, args.top_n, args.analysis_type)
 

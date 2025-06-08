@@ -14,16 +14,16 @@ def visualize_top_keywords(df: pd.DataFrame, top_n: int = 10, analysis_type: str
     """
     top_keywords = df.head(top_n)
 
-    plt.figure(figsize=(12, 6))
-    sns.barplot(y=top_keywords.index, x="Density", data=top_keywords, orient='h')
-    plt.yticks(rotation=0)
-    plt.xlabel("Density (%)")
-    # Move ylabel inside the conditional block and make it specific
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.barplot(y=top_keywords.index, x="Density", data=top_keywords, orient="h", ax=ax)
+    ax.tick_params(axis="y", rotation=0)
+    ax.set_xlabel("Density (%)")
     if analysis_type == "words":
-        plt.ylabel("Keyword")
-        plt.title(f"Top {top_n} Keywords")
+        ax.set_ylabel("Keyword")
+        ax.set_title(f"Top {top_n} Keywords")
     else:
-        plt.ylabel("Noun Chunk")
-        plt.title(f"Top {top_n} Noun Chunks")
+        ax.set_ylabel("Noun Chunk")
+        ax.set_title(f"Top {top_n} Noun Chunks")
     plt.tight_layout()
+    sns.despine(left=True)
     plt.show()

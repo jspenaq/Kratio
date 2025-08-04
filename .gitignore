@@ -173,8 +173,23 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+# VisualStudioCode
+.vscode/*
+
+# Roo Code
+.roo/
+
+# VisualStudioCode
+.vscode/*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Repomix
+repomix*
+.repomixignore
+
 # Aider
 .aider*
-
-# VisualStudioCode #
-.vscode/*

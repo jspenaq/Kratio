@@ -1,6 +1,7 @@
 import pandas as pd
 
-from kratio.core.analyzers import WordAnalyzer, NounChunkAnalyzer
+from kratio.core.analyzers import NounChunkAnalyzer, WordAnalyzer
+
 
 def analyze_text_words(text: str) -> pd.DataFrame:
     """

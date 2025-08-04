@@ -1,22 +1,27 @@
 import pandas as pd
+
 from kratio.core.analyzer_interface import Analyzer
 from kratio.core.spacy_loader import SpacyModelLoader
-from kratio.utils.timing import timed
 from kratio.utils.data_utils import normalize_to_dataframe
+from kratio.utils.timing import timed
+
 
 class WordAnalyzer(Analyzer):
-    def __init__(self):
+    def __init__(self) -> None:
         self.nlp = SpacyModelLoader.get_nlp()
 
     @timed("analyzing words")
     def analyze(self, text: str) -> pd.DataFrame:
         doc = self.nlp(text)
-        words = [token.lemma_.lower() for token in doc if not token.is_stop and not token.is_punct and token.lemma_.strip()]
+        words = [
+            token.lemma_.lower() for token in doc if not token.is_stop and not token.is_punct and token.lemma_.strip()
+        ]
         word_counts = pd.Series(words).value_counts()
         return normalize_to_dataframe(word_counts, len(words), "Keyword", "Word")
 
+
 class NounChunkAnalyzer(Analyzer):
-    def __init__(self):
+    def __init__(self) -> None:
         self.nlp = SpacyModelLoader.get_nlp()
 
     @timed("analyzing noun chunks")

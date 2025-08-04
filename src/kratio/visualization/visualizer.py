@@ -22,7 +22,8 @@ def visualize_top_keywords(
     top_keywords = df.head(top_n)
 
     fig, ax = plt.subplots(figsize=(12, 6))
-    sns.barplot(y=top_keywords.index, x="Density", data=top_keywords, orient="h", ax=ax)
+    density_col = "WordDensity" if analysis_type == ANALYSIS_TYPE_WORDS else "NounChunkDensity"
+    sns.barplot(y=top_keywords.index, x=density_col, data=top_keywords, orient="h", ax=ax)
     ax.tick_params(axis="y", rotation=0)
     ax.set_xlabel("Density (%)")
     if analysis_type == ANALYSIS_TYPE_WORDS:

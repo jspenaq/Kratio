@@ -1,8 +1,17 @@
 import pandas as pd
 import spacy
+from loguru import logger
 
 # Load the English language model
-nlp = spacy.load("en_core_web_sm")
+try:
+    nlp = spacy.load("en_core_web_sm")
+except OSError:
+    logger.exception(
+        "Downloading spaCy model 'en_core_web_sm' failed. "
+        "Please run 'python -m spacy download en_core_web_sm' to download it manually."
+    )
+    # Exit the program or handle the error appropriately
+    exit(1)
 
 
 def analyze_text_words(text: str) -> pd.DataFrame:

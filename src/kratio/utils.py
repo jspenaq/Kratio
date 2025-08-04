@@ -1,4 +1,5 @@
 import pandas as pd
+from loguru import logger
 
 
 def display_top_keywords(df: pd.DataFrame, top_n: int) -> None:
@@ -11,13 +12,13 @@ def display_top_keywords(df: pd.DataFrame, top_n: int) -> None:
         top_n (int): The number of top keywords/noun chunks to display.
     """
     if df.empty:
-        print("No data to display for keywords.")
+        logger.info("No data to display for keywords.")
         return
 
     top_keywords = df.head(top_n)
 
-    print(f"\n--- Top {top_n} Keywords/Noun Chunks ---")
+    logger.info(f"\n--- Top {top_n} Keywords/Noun Chunks ---")
     for _index, row in top_keywords.iterrows():
         # The keyword/noun chunk is in the DataFrame's index
-        print(f"Keyword: {row.name}, Density: {row['Density']:.4f}, Frequency: {row['Frequency']}")
-    print("--------------------------------------")
+        logger.info(f"Keyword: {row.name}, Density: {row['Density']:.4f}, Frequency: {row['Frequency']}")
+    logger.info("--------------------------------------")

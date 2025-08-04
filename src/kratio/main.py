@@ -1,5 +1,6 @@
 import argparse
 import os
+from loguru import logger
 
 from kratio.analyzer import analyze_text_noun_chunks, analyze_text_words
 from kratio.file_handler import read_text_file
@@ -11,6 +12,9 @@ def main() -> None:
     """
     Main function to run the Kratio keyword density analyzer.
     """
+    # Configure loguru to log to a file
+    logger.add("logs/kratio.log", rotation="5 MB", level="INFO")
+
     # Create an argument parser
     parser = argparse.ArgumentParser(description="Analyze keyword density in a text file.")
     parser.add_argument("file_path", type=str, help="The path to the text file.")
@@ -54,12 +58,12 @@ def main() -> None:
             # The keyword/noun chunk is in the DataFrame's index
             if file_extension == ".csv":
                 df.to_csv(output_path, index=True)
-                print(f"DataFrame successfully dumped to {output_path} (CSV format).")
+                logger.info(f"DataFrame successfully dumped to {output_path} (CSV format).")
             elif file_extension == ".json":
                 df.to_json(output_path, orient="records", indent=4)
-                print(f"DataFrame successfully dumped to {output_path} (JSON format).")
+                logger.info(f"DataFrame successfully dumped to {output_path} (JSON format).")
             else:
-                print(f"Unsupported output format: {file_extension}. Please use .csv or .json.")
+                logger.error(f"Unsupported output format: {file_extension}. Please use .csv or .json.")
 
 
 if __name__ == "__main__":

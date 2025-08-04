@@ -1,4 +1,5 @@
 from pathlib import Path
+from loguru import logger
 
 
 def read_text_file(file_path: Path | str) -> str | None:
@@ -17,8 +18,8 @@ def read_text_file(file_path: Path | str) -> str | None:
         with file_path.open(encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
-        print(f"Error: File not found at {file_path}")
+        logger.error(f"Error: File not found at {file_path}")
         return None
     except Exception as e:
-        print(f"Error: An error occurred while reading the file: {e}")
+        logger.exception(f"Error: An error occurred while reading the file: {e}")
         return None

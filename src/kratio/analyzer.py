@@ -42,15 +42,15 @@ def analyze_text_words(text: str) -> pd.DataFrame:
     return df.sort_values("Frequency", ascending=False)
 
 
-def analyze_text_sentences(text: str) -> pd.DataFrame:
+def analyze_text_noun_chunks(text: str) -> pd.DataFrame:
     """
-    Analyzes the given text and returns a DataFrame with sentence frequencies.
+    Analyzes the given text and returns a DataFrame with noun chunk frequencies and densities.
 
     Args:
         text (str): The text to analyze.
 
     Returns:
-        pandas.DataFrame: A DataFrame with sentence frequencies.
+        pandas.DataFrame: A DataFrame with noun chunk frequencies and densities.
     """
     # Process the text with spaCy
     doc = nlp(text)

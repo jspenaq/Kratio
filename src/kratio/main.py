@@ -1,6 +1,6 @@
 import argparse
 
-from kratio.analyzer import analyze_text_sentences, analyze_text_words
+from kratio.analyzer import analyze_text_noun_chunks, analyze_text_words
 from kratio.file_handler import read_text_file
 from kratio.utils import display_top_keywords
 from kratio.visualizer import visualize_top_keywords
@@ -17,8 +17,8 @@ def main() -> None:
         "--analysis_type",
         type=str,
         default="words",
-        choices=["words", "sentences"],
-        help="The type of analysis to perform (words or sentences, default: words).",
+        choices=["words", "noun_chunks"],
+        help="The type of analysis to perform (words or noun chunks, default: words).",
     )
     parser.add_argument(
         "--top_n",
@@ -35,7 +35,7 @@ def main() -> None:
 
     if text:
         # Analyze the text using a ternary operator as suggested by ruff SIM108
-        df = analyze_text_words(text) if args.analysis_type == "words" else analyze_text_sentences(text)
+        df = analyze_text_words(text) if args.analysis_type == "words" else analyze_text_noun_chunks(text)
 
         display_top_keywords(df, args.top_n)
         # Visualize the top keywords

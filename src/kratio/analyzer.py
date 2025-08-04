@@ -1,3 +1,5 @@
+import time
+
 import pandas as pd
 import spacy
 from loguru import logger
@@ -24,11 +26,15 @@ def analyze_text_words(text: str) -> pd.DataFrame:
     Returns:
         pandas.DataFrame: A DataFrame with word frequencies and keyword densities.
     """
+    start_time = time.perf_counter()
     # Process the text with spaCy
     doc = nlp(text)
 
     # Create a list of words, removing stop words, punctuation, and tokens without sense
     words = [token.lemma_.lower() for token in doc if not token.is_stop and not token.is_punct and token.lemma_.strip()]
+    end_time = time.perf_counter()
+    duration = (end_time - start_time) * 1000  # Convert to milliseconds
+    logger.info(f"Time spent analyzing words: {duration:.2f} ms")
 
     # Calculate word frequencies
     word_counts = pd.Series(words).value_counts()
@@ -61,6 +67,7 @@ def analyze_text_noun_chunks(text: str) -> pd.DataFrame:
     Returns:
         pandas.DataFrame: A DataFrame with noun chunk frequencies and densities.
     """
+    start_time = time.perf_counter()
     # Process the text with spaCy
     doc = nlp(text)
 
@@ -70,6 +77,9 @@ def analyze_text_noun_chunks(text: str) -> pd.DataFrame:
         for chunk in doc.noun_chunks
         if not chunk.root.is_stop and not chunk.root.is_punct and chunk.text.strip()
     ]
+    end_time = time.perf_counter()
+    duration = (end_time - start_time) * 1000  # Convert to milliseconds
+    logger.info(f"Time spent analyzing noun chunks: {duration:.2f} ms")
 
     # Calculate noun chunk frequencies
     noun_counts = pd.Series(noun_chunks).value_counts()

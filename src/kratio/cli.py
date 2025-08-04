@@ -7,7 +7,11 @@ from kratio.constants import ANALYSIS_TYPE_NOUN_CHUNKS, ANALYSIS_TYPE_WORDS
 from kratio.core.analyzer import analyze_text_noun_chunks, analyze_text_words
 from kratio.io.file_handler import read_text_file
 from kratio.utils.utils import display_top_keywords
-from kratio.visualization.visualizer import visualize_top_keywords
+from kratio.visualization.visualizer import (
+    display_plot,
+    persist_plot,
+    visualize_top_keywords,
+)
 
 
 def main() -> None:
@@ -60,7 +64,11 @@ def main() -> None:
 
         display_top_keywords(df, args.top_n)
         # Visualize the top keywords
-        visualize_top_keywords(df, args.top_n, args.analysis_type, save_path=args.save_plot)
+        fig = visualize_top_keywords(df, args.top_n, args.analysis_type)
+        if args.save_plot:
+            persist_plot(fig, args.save_plot)
+        else:
+            display_plot(fig)
 
         # Dump DataFrame to file if --output is specified
         if args.output:

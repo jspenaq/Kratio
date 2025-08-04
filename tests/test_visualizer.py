@@ -4,27 +4,26 @@ import pandas as pd
 import pytest
 
 # Import the function to be tested
-from kratio.visualization.visualizer import visualize_top_keywords
+from kratio.visualization.visualizer import (
+    persist_plot,
+    visualize_top_keywords,
+)
 
 
 @pytest.fixture
 def mock_plot_modules():
     """
-    Mocks matplotlib.pyplot and seaborn functions to prevent actual plotting
-    and allow verification of calls.
+    Mocks matplotlib.pyplot and seaborn functions, and kratio.visualization.visualizer
+    functions to prevent actual plotting and allow verification of calls.
     """
     # Use patch as a context manager for multiple mocks
     with (
         patch("matplotlib.pyplot.subplots") as mock_subplots,
         patch("seaborn.barplot") as mock_barplot,
-        # No need to mock specific plt. functions like xticks, xlabel, ylabel, title
-        # as we will assert calls on the mock ax object returned by subplots
         patch("matplotlib.pyplot.tight_layout") as mock_tight_layout,
-        patch("matplotlib.pyplot.show") as mock_show,
+        patch("kratio.visualization.visualizer.display_plot") as mock_display_plot,
+        patch("kratio.visualization.visualizer.persist_plot") as mock_persist_plot,
     ):
-        # Yield the mocked objects so tests can access them for assertions
-        # Configure mock_subplots to return a mock figure and mock axes
-        # Configure mock_subplots to return a mock figure and mock axes
         mock_fig = MagicMock()
         mock_ax = MagicMock()
         mock_subplots.return_value = (mock_fig, mock_ax)
@@ -35,7 +34,8 @@ def mock_plot_modules():
             "ax": mock_ax,
             "barplot": mock_barplot,
             "tight_layout": mock_tight_layout,
-            "show": mock_show,
+            "display_plot": mock_display_plot,
+            "persist_plot": mock_persist_plot,
         }
 
 
@@ -61,7 +61,7 @@ def test_visualize_top_keywords_basic(mock_plot_modules):
     expected_top_keywords = df.head(top_n)
 
     # Act
-    visualize_top_keywords(df)
+    fig = visualize_top_keywords(df)
 
     # Assert
     mock_plot_modules["subplots"].assert_called_once_with(figsize=(12, 6))
@@ -80,7 +80,7 @@ def test_visualize_top_keywords_basic(mock_plot_modules):
     mock_plot_modules["ax"].set_ylabel.assert_called_once_with("Keyword")
     mock_plot_modules["ax"].set_title.assert_called_once_with(f"Top {top_n} Keywords")
     mock_plot_modules["tight_layout"].assert_called_once()
-    mock_plot_modules["show"].assert_called_once()
+    mock_plot_modules["display_plot"].assert_called_once_with(fig)
 
 
 def test_visualize_top_keywords_fewer_than_top_n(mock_plot_modules):
@@ -95,7 +95,7 @@ def test_visualize_top_keywords_fewer_than_top_n(mock_plot_modules):
     expected_top_keywords = df  # All 5 keywords should be used
 
     # Act
-    visualize_top_keywords(df)
+    fig = visualize_top_keywords(df)
 
     # Assert
     mock_plot_modules["subplots"].assert_called_once_with(figsize=(12, 6))
@@ -112,7 +112,7 @@ def test_visualize_top_keywords_fewer_than_top_n(mock_plot_modules):
     mock_plot_modules["ax"].set_ylabel.assert_called_once_with("Keyword")
     mock_plot_modules["ax"].set_title.assert_called_once_with(f"Top {top_n} Keywords")
     mock_plot_modules["tight_layout"].assert_called_once()
-    mock_plot_modules["show"].assert_called_once()
+    mock_plot_modules["display_plot"].assert_called_once_with(fig)
 
 
 def test_visualize_top_keywords_empty_dataframe(mock_plot_modules):
@@ -128,7 +128,7 @@ def test_visualize_top_keywords_empty_dataframe(mock_plot_modules):
     top_n = 10  # Default value
 
     # Act
-    visualize_top_keywords(df)
+    fig = visualize_top_keywords(df)
 
     # Assert
     mock_plot_modules["subplots"].assert_called_once_with(figsize=(12, 6))
@@ -145,7 +145,7 @@ def test_visualize_top_keywords_empty_dataframe(mock_plot_modules):
     mock_plot_modules["ax"].set_ylabel.assert_called_once_with("Keyword")
     mock_plot_modules["ax"].set_title.assert_called_once_with(f"Top {top_n} Keywords")
     mock_plot_modules["tight_layout"].assert_called_once()
-    mock_plot_modules["show"].assert_called_once()
+    mock_plot_modules["display_plot"].assert_called_once_with(fig)
 
 
 def test_visualize_top_keywords_custom_top_n(mock_plot_modules):
@@ -160,7 +160,7 @@ def test_visualize_top_keywords_custom_top_n(mock_plot_modules):
     expected_top_keywords = df.head(custom_top_n)
 
     # Act
-    visualize_top_keywords(df, top_n=custom_top_n)
+    fig = visualize_top_keywords(df, top_n=custom_top_n)
 
     # Assert
     mock_plot_modules["subplots"].assert_called_once_with(figsize=(12, 6))
@@ -177,4 +177,24 @@ def test_visualize_top_keywords_custom_top_n(mock_plot_modules):
     mock_plot_modules["ax"].set_ylabel.assert_called_once_with("Keyword")
     mock_plot_modules["ax"].set_title.assert_called_once_with(f"Top {custom_top_n} Keywords")
     mock_plot_modules["tight_layout"].assert_called_once()
-    mock_plot_modules["show"].assert_called_once()
+    mock_plot_modules["display_plot"].assert_called_once_with(fig)
+
+
+def test_visualize_top_keywords_save_path(mock_plot_modules):
+    """
+    Arrange: Create a sample DataFrame and a mock save_path.
+    Act: Call visualize_top_keywords and then persist_plot.
+    Assert: Verify that persist_plot is called with the figure and save_path.
+    """
+    # Arrange
+    df = create_sample_dataframe(num_rows=15)
+    save_path = "/tmp/test_plot.png"
+
+    # Act
+    fig = visualize_top_keywords(df)
+    persist_plot(fig, save_path)
+
+    # Assert
+    mock_plot_modules["persist_plot"].assert_called_once_with(fig, save_path)
+    # Ensure display_plot was NOT called
+    mock_plot_modules["display_plot"].assert_not_called()

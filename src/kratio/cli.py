@@ -3,11 +3,11 @@ from pathlib import Path
 
 from loguru import logger
 
-from kratio.analyzer import analyze_text_noun_chunks, analyze_text_words
 from kratio.constants import ANALYSIS_TYPE_NOUN_CHUNKS, ANALYSIS_TYPE_WORDS
-from kratio.file_handler import read_text_file
-from kratio.utils import display_top_keywords
-from kratio.visualizer import visualize_top_keywords
+from kratio.core.analyzer import analyze_text_noun_chunks, analyze_text_words
+from kratio.io.file_handler import read_text_file
+from kratio.utils.utils import display_top_keywords
+from kratio.visualization.visualizer import visualize_top_keywords
 
 
 def main() -> None:

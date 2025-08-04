@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 
 # Import the function to be tested
-from src.kratio.visualizer import visualize_top_keywords
+from kratio.visualization.visualizer import visualize_top_keywords
 
 
 @pytest.fixture

@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 
 # Import the function to be tested
-from src.kratio.analyzer import analyze_text_words
+from kratio.core.analyzer import analyze_text_words
 
 
 # Helper class to create mock spaCy Token objects

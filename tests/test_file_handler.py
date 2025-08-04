@@ -1,7 +1,7 @@
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from src.kratio.file_handler import read_text_file
+from kratio.io.file_handler import read_text_file
 
 
 def test_read_text_file_success(tmp_path):

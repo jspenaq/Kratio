@@ -42,6 +42,11 @@ def main() -> None:
         type=str,
         help="Output file path to dump the DataFrame (CSV or JSON format).",
     )
+    parser.add_argument(
+        "--save-plot",
+        type=str,
+        help="Path to save the visualization plot (e.g., path.png).",
+    )
 
     # Parse the arguments
     args = parser.parse_args()
@@ -55,7 +60,7 @@ def main() -> None:
 
         display_top_keywords(df, args.top_n)
         # Visualize the top keywords
-        visualize_top_keywords(df, args.top_n, args.analysis_type)
+        visualize_top_keywords(df, args.top_n, args.analysis_type, save_path=args.save_plot)
 
         # Dump DataFrame to file if --output is specified
         if args.output:

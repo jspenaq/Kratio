@@ -5,7 +5,12 @@ import seaborn as sns
 from kratio.constants import ANALYSIS_TYPE_WORDS
 
 
-def visualize_top_keywords(df: pd.DataFrame, top_n: int = 10, analysis_type: str = ANALYSIS_TYPE_WORDS) -> None:
+def visualize_top_keywords(
+    df: pd.DataFrame,
+    top_n: int = 10,
+    analysis_type: str = ANALYSIS_TYPE_WORDS,
+    save_path: str | None = None,
+) -> None:
     """
     Generates a bar chart visualization of the top N keywords/noun chunks and their densities.
 
@@ -28,4 +33,7 @@ def visualize_top_keywords(df: pd.DataFrame, top_n: int = 10, analysis_type: str
         ax.set_title(f"Top {top_n} Noun Chunks")
     plt.tight_layout()
     sns.despine(left=True)
-    plt.show()
+    if save_path:
+        plt.savefig(save_path)
+    else:
+        plt.show()

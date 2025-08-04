@@ -34,11 +34,8 @@ def main() -> None:
     text = read_text_file(args.file_path)
 
     if text:
-        # Analyze the text
-        if args.analysis_type == "words":
-            df = analyze_text_words(text)
-        else:
-            df = analyze_text_sentences(text)
+        # Analyze the text using a ternary operator as suggested by ruff SIM108
+        df = analyze_text_words(text) if args.analysis_type == "words" else analyze_text_sentences(text)
 
         display_top_keywords(df, args.top_n)
         # Visualize the top keywords

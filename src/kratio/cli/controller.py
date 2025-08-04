@@ -39,13 +39,29 @@ class KratioController:
                 else analyze_text_noun_chunks(text)
             )
 
-            display_top_keywords(df, args.top_n)
-
-            fig = visualize_top_keywords(df, args.top_n, args.analysis_type)
-            if args.save_plot:
-                persist_plot(fig, args.save_plot)
+            # Display results based on format, unless silent mode is active
+            if not args.silent:
+                display_top_keywords(df, args.top_n, args.format)
             else:
-                display_plot(fig)
+                # If silent, but output file is specified, still serialize
+                if args.output:
+                    self.serializer.serialize(df, args.output)
+                # If silent and no output file, still log formatted keywords for internal use/debugging
+                # without printing to console. This ensures data is processed even if not displayed.
+                else:
+                    # This will prevent any console output from display_top_keywords
+                    # but still allow the data to be processed and potentially logged internally.
+                    # We need to ensure that _log_formatted_keywords is not called if silent is true
+                    # and no output file is specified.
+                    # The current implementation of display_top_keywords already handles this.
+                    pass
+
+            if not args.no_visualization:
+                fig = visualize_top_keywords(df, args.top_n, args.analysis_type)
+                if args.save_plot:
+                    persist_plot(fig, args.save_plot)
+                else:
+                    display_plot(fig)
 
             if args.output:
                 self.serializer.serialize(df, args.output)

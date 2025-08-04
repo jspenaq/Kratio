@@ -39,4 +39,21 @@ def parse_arguments() -> argparse.Namespace:
         type=str,
         help="Path to save the visualization plot (e.g., path.png).",
     )
+    parser.add_argument(
+        "--no-visualization",
+        action="store_true",
+        help="Disable visualization output.",
+    )
+    parser.add_argument(
+        "--format",
+        type=str,
+        default="table",
+        choices=["json", "csv", "table"],
+        help="Output format for the analysis results (json, csv, or table, default: table).",
+    )
+    parser.add_argument(
+        "--silent",
+        action="store_true",
+        help="Suppress all non-essential output, including logging messages.",
+    )
     return parser.parse_args()

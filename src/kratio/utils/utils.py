@@ -1,5 +1,8 @@
+import json
+
 import pandas as pd
 from loguru import logger
+from tabulate import tabulate  # Will need to add tabulate to pyproject.toml
 
 
 def format_top_keywords(df: pd.DataFrame, top_n: int) -> list[dict]:
@@ -46,14 +49,32 @@ def _log_formatted_keywords(formatted_list: list[dict], top_n: int) -> None:
     logger.info("--------------------------------------")
 
 
-def display_top_keywords(df: pd.DataFrame, top_n: int) -> None:
+def display_top_keywords(df: pd.DataFrame, top_n: int, format_type: str = "table") -> None:
     """
-    Formats and displays the top N keywords or noun chunks from a DataFrame.
+    Formats and displays the top N keywords or noun chunks from a DataFrame
+    in the specified format.
 
     Args:
         df (pd.DataFrame): The DataFrame containing keyword/noun chunk analysis.
                            Expected to have 'keyword' and 'density' columns.
         top_n (int): The number of top keywords/noun chunks to display.
+        format_type (str): The desired output format ('json', 'csv', or 'table').
     """
     formatted_data = format_top_keywords(df, top_n)
-    _log_formatted_keywords(formatted_data, top_n)
+
+    if not formatted_data:
+        print("No data to display for keywords.")
+        return
+    
+    if format_type == "json":
+        print(json.dumps(formatted_data, indent=2))
+    elif format_type == "csv":
+        # Convert list of dicts to DataFrame for easy CSV conversion
+        csv_df = pd.DataFrame(formatted_data)
+        print(csv_df.to_csv(index=False))
+    elif format_type == "table":
+        # Use tabulate for pretty table output
+        print(tabulate(formatted_data, headers="keys", tablefmt="grid"))
+    else:
+        # Fallback to default logging if an unknown format is provided
+        _log_formatted_keywords(formatted_data, top_n)

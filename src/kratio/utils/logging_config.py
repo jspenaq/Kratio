@@ -3,7 +3,7 @@ import sys
 from loguru import logger
 
 
-def setup_logging(log_file_path: str = "logs/kratio.log", level: str = "INFO") -> None:
+def setup_logging(log_file_path: str = "logs/kratio.log", level: str = "INFO", silent: bool = False) -> None:
     """
     Configures Loguru for logging to a file and console.
 
@@ -12,7 +12,8 @@ def setup_logging(log_file_path: str = "logs/kratio.log", level: str = "INFO") -
         level (str): The minimum logging level.
     """
     logger.remove()  # Remove default handler
-    # logger.add(sys.stderr, level=level, format="{time} - {level} - {message}")
-    logger.add(sys.stderr, level=level)
-    # logger.add(log_file_path, rotation="5 MB", level=level, format="{time} - {level} - {message}")
+
+    if not silent:
+        logger.add(sys.stderr, level=level)
+
     logger.add(log_file_path, rotation="5 MB", level=level)

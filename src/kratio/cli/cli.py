@@ -9,8 +9,8 @@ def main() -> None:
     Main function to run the Kratio keyword density analyzer.
     Acts as the composition root for the application.
     """
-    setup_logging()
     args = parse_arguments()
+    setup_logging(silent=args.silent)
 
     serializer = Serializer()
     controller = KratioController(serializer=serializer)

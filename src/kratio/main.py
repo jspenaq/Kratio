@@ -1,8 +1,10 @@
 import argparse
-import os
+from pathlib import Path
+
 from loguru import logger
 
 from kratio.analyzer import analyze_text_noun_chunks, analyze_text_words
+from kratio.constants import ANALYSIS_TYPE_NOUN_CHUNKS, ANALYSIS_TYPE_WORDS
 from kratio.file_handler import read_text_file
 from kratio.utils import display_top_keywords
 from kratio.visualizer import visualize_top_keywords
@@ -21,9 +23,13 @@ def main() -> None:
     parser.add_argument(
         "--analysis_type",
         type=str,
-        default="words",
-        choices=["words", "noun_chunks"],
-        help="The type of analysis to perform (words or noun chunks, default: words).",
+        default=ANALYSIS_TYPE_WORDS,
+        choices=[ANALYSIS_TYPE_WORDS, ANALYSIS_TYPE_NOUN_CHUNKS],
+        help=(
+            f"The type of analysis to perform ("
+            f"{ANALYSIS_TYPE_WORDS} or {ANALYSIS_TYPE_NOUN_CHUNKS}, "
+            f"default: {ANALYSIS_TYPE_WORDS})."
+        ),
     )
     parser.add_argument(
         "--top_n",
@@ -45,7 +51,7 @@ def main() -> None:
 
     if text:
         # Analyze the text using a ternary operator as suggested by ruff SIM108
-        df = analyze_text_words(text) if args.analysis_type == "words" else analyze_text_noun_chunks(text)
+        df = analyze_text_words(text) if args.analysis_type == ANALYSIS_TYPE_WORDS else analyze_text_noun_chunks(text)
 
         display_top_keywords(df, args.top_n)
         # Visualize the top keywords
@@ -54,7 +60,7 @@ def main() -> None:
         # Dump DataFrame to file if --output is specified
         if args.output:
             output_path = args.output
-            file_extension = os.path.splitext(output_path)[1].lower()
+            file_extension = Path(output_path).suffix.lower()
             # The keyword/noun chunk is in the DataFrame's index
             if file_extension == ".csv":
                 df.to_csv(output_path, index=True)

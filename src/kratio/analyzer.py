@@ -8,7 +8,7 @@ try:
 except OSError:
     logger.exception(
         "Downloading spaCy model 'en_core_web_sm' failed. "
-        "Please run 'python -m spacy download en_core_web_sm' to download it manually."
+        "Please run 'python -m spacy download en_core_web_sm' to download it manually.",
     )
     # Exit the program or handle the error appropriately
     exit(1)

@@ -2,6 +2,24 @@ from pathlib import Path
 
 from loguru import logger
 
+from kratio.exceptions import FileReadError
+
+
+def _read_text(file_path: Path | str) -> str:
+    """
+    Reads a text file and returns its content as a string.
+    Raises FileReadError on failure.
+    """
+    try:
+        if isinstance(file_path, str):
+            file_path = Path(file_path)
+        with file_path.open(encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError as e:
+        raise FileReadError(f"File not found at {file_path}") from e
+    except Exception as e:
+        raise FileReadError(f"An error occurred while reading the file: {e}") from e
+
 
 def read_text_file(file_path: Path | str) -> str | None:
     """
@@ -14,13 +32,7 @@ def read_text_file(file_path: Path | str) -> str | None:
         str: The content of the text file.
     """
     try:
-        if isinstance(file_path, str):
-            file_path = Path(file_path)
-        with file_path.open(encoding="utf-8") as f:
-            return f.read()
-    except FileNotFoundError:
-        logger.error(f"Error: File not found at {file_path}")
-        return None
-    except Exception as e:
-        logger.exception(f"Error: An error occurred while reading the file: {e}")
+        return _read_text(file_path)
+    except FileReadError as e:
+        logger.error(f"Error: {e}")
         return None

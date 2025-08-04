@@ -1,7 +1,10 @@
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from kratio.io.file_handler import read_text_file
+import pytest
+
+from kratio.exceptions import FileReadError
+from kratio.io.file_handler import _read_text, read_text_file
 
 
 def test_read_text_file_success(tmp_path):
@@ -25,7 +28,7 @@ def test_read_text_file_not_found(capsys):
 
     assert result is None
     captured = capsys.readouterr()
-    assert f"Error: File not found at {non_existent_file}" in captured.out
+    assert f"Error: File not found at {non_existent_file}" in captured.err
 
 
 def test_read_text_file_other_exception(monkeypatch, capsys):
@@ -44,7 +47,35 @@ def test_read_text_file_other_exception(monkeypatch, capsys):
 
     assert result is None
     captured = capsys.readouterr()
-    assert "Error: An error occurred while reading the file: Permission denied" in captured.out
+    assert "Error: An error occurred while reading the file: Permission denied" in captured.err
 
     # Optionally, verify that Path.open was called with the correct arguments
+    mock_open.assert_called_once_with(mock_file_path, encoding="utf-8")
+
+
+def test_read_text_pure_raises_file_not_found():
+    """
+    Tests that _read_text raises FileReadError for a non-existent file.
+    """
+    non_existent_file = Path("non_existent_file.txt")
+    with pytest.raises(FileReadError) as excinfo:
+        _read_text(non_existent_file)
+    assert "File not found" in str(excinfo.value)
+
+
+def test_read_text_pure_raises_other_exception(monkeypatch):
+    """
+    Tests that _read_text raises FileReadError for other exceptions during file reading.
+    """
+    mock_file_path = Path("mock_file.txt")
+
+    # Create a MagicMock instance that will raise an OSError when called
+    mock_open = MagicMock(side_effect=OSError("Permission denied"))
+
+    # Use monkeypatch to replace Path.open with our mock_open object
+    monkeypatch.setattr(Path, "open", mock_open)
+
+    with pytest.raises(FileReadError) as excinfo:
+        _read_text(mock_file_path)
+    assert "An error occurred while reading the file: Permission denied" in str(excinfo.value)
     mock_open.assert_called_once_with(mock_file_path, encoding="utf-8")

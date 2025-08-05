@@ -65,7 +65,7 @@ def display_top_keywords(df: pd.DataFrame, top_n: int, format_type: str = "table
     if not formatted_data:
         print("No data to display for keywords.")
         return
-    
+
     if format_type == "json":
         print(json.dumps(formatted_data, indent=2))
     elif format_type == "csv":

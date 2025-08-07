@@ -78,6 +78,9 @@ select = [
 
 [tool.coverage.run]
 branch = true
+source = [
+    "kratio",  # Include the kratio package
+]
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration

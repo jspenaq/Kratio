@@ -117,10 +117,6 @@ class KratioEventHandler(FileSystemEventHandler):
         if event.is_directory:
             return
 
-        # If we're watching a specific file, ignore creation events
-        if self.target_path:
-            return
-
         # Get the path of the created file
         file_path = Path(str(event.src_path))
         logger.debug(f"Created event for: {file_path}")

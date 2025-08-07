@@ -116,6 +116,41 @@ def test_kratio_event_handler_on_modified_file_extension():
     callback.assert_called_with(Path("test.txt"))
 
 
+def test_kratio_event_handler_on_moved(tmp_path):
+    """Test that file move events are handled correctly."""
+    # Arrange
+    callback = MagicMock()
+    handler = KratioEventHandler(callback, supported_extensions=[".txt"])
+    dest_path = tmp_path / "moved.txt"
+    event = MagicMock()
+    event.is_directory = False
+    event.src_path = str(tmp_path / "original.txt")
+    event.dest_path = str(dest_path)
+
+    # Act
+    handler.on_moved(event)
+
+    # Assert
+    callback.assert_called_once_with(dest_path)
+
+
+def test_kratio_event_handler_on_created(tmp_path):
+    """Test that file creation events are handled correctly."""
+    # Arrange
+    callback = MagicMock()
+    handler = KratioEventHandler(callback, supported_extensions=[".txt"])
+    created_path = tmp_path / "created.txt"
+    event = MagicMock()
+    event.is_directory = False
+    event.src_path = str(created_path)
+
+    # Act
+    handler.on_created(event)
+
+    # Assert
+    callback.assert_called_once_with(created_path)
+
+
 def test_file_watcher_init():
     """Test initialization of FileWatcher."""
     # Act

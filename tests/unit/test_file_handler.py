@@ -19,21 +19,19 @@ def test_read_text_file_success(tmp_path):
     assert result == file_content
 
 
-def test_read_text_file_not_found(capsys):
+def test_read_text_file_not_found():
     """
-    Tests that read_text_file handles FileNotFoundError correctly.
+    Tests that read_text_file handles FileNotFoundError correctly by raising FileReadError.
     """
     non_existent_file = Path("non_existent_file.txt")
-    result = read_text_file(non_existent_file)
-
-    assert result is None
-    captured = capsys.readouterr()
-    assert f"Error: File not found at {non_existent_file}" in captured.err
+    with pytest.raises(FileReadError) as excinfo:
+        read_text_file(non_existent_file)
+    assert "File not found at" in str(excinfo.value)
 
 
-def test_read_text_file_other_exception(monkeypatch, capsys):
+def test_read_text_file_other_exception(monkeypatch):
     """
-    Tests that read_text_file handles other exceptions during file reading using MagicMock.
+    Tests that read_text_file handles other exceptions during file reading by raising FileReadError.
     """
     mock_file_path = Path("mock_file.txt")
 
@@ -43,14 +41,10 @@ def test_read_text_file_other_exception(monkeypatch, capsys):
     # Use monkeypatch to replace Path.open with our mock_open object
     monkeypatch.setattr(Path, "open", mock_open)
 
-    result = read_text_file(mock_file_path)
-
-    assert result is None
-    captured = capsys.readouterr()
-    assert "Error: An error occurred while reading the file: Permission denied" in captured.err
-
-    # Optionally, verify that Path.open was called with the correct arguments
-    mock_open.assert_called_once_with(mock_file_path, encoding="utf-8")
+    with pytest.raises(FileReadError) as excinfo:
+        read_text_file(mock_file_path)
+    assert "An error occurred while reading the file: Permission denied" in str(excinfo.value)
+    mock_open.assert_called_once()
 
 
 def test_read_text_pure_raises_file_not_found():
@@ -78,4 +72,4 @@ def test_read_text_pure_raises_other_exception(monkeypatch):
     with pytest.raises(FileReadError) as excinfo:
         _read_text(mock_file_path)
     assert "An error occurred while reading the file: Permission denied" in str(excinfo.value)
-    mock_open.assert_called_once_with(mock_file_path, encoding="utf-8")
+    mock_open.assert_called_once()

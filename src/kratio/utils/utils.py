@@ -2,7 +2,7 @@ import json
 
 import pandas as pd
 from loguru import logger
-from tabulate import tabulate  # Will need to add tabulate to pyproject.toml
+from tabulate import tabulate
 
 
 def format_top_keywords(df: pd.DataFrame, top_n: int) -> list[dict]:

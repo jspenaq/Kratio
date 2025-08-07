@@ -60,4 +60,14 @@ def parse_arguments() -> argparse.Namespace:
         action="store_true",
         help="Suppress all non-essential output, including logging messages.",
     )
+    parser.add_argument(
+        "--watch",
+        action="store_true",
+        help="Monitor the file or directory and re-run analysis on every change.",
+    )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug logging for troubleshooting.",
+    )
     return parser.parse_args()

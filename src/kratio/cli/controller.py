@@ -1,9 +1,12 @@
 import os
+from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     import argparse
+
+from loguru import logger
 
 from kratio.constants import ANALYSIS_TYPE_WORDS, SUPPORTED_EXTENSIONS
 from kratio.core.analyzer import analyze_text_noun_chunks, analyze_text_words
@@ -63,6 +66,11 @@ class KratioController:
             )
 
             if not args.silent:
+                # Add timestamp in watch mode
+                if hasattr(args, "watch") and args.watch:
+                    timestamp = datetime.now().strftime("%H:%M:%S")
+                    logger.info(f"[{timestamp}] Analysis results for {file_path}:")
+
                 display_top_keywords(df, args.top_n, args.format)
 
             if args.output:

@@ -3,7 +3,7 @@ from unittest.mock import patch
 import pandas as pd
 import pytest
 
-from src.kratio.io.serializer import Serializer
+from kratio.io.serializer import Serializer
 
 
 @pytest.fixture

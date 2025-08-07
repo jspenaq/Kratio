@@ -35,6 +35,7 @@ Kratio is a sophisticated keyword density analyzer that helps content creators, 
 * **Multiple Output Formats**: Supports table, CSV, and JSON output formats
 * **Batch Processing**: Analyze multiple files in a directory at once
 * **File Format Support**: Works with various text-based file formats (.txt, .md, .py, .html, .js)
+* **Watch Mode**: Monitor files or directories and automatically re-analyze on changes
 * **Offline-First**: No internet connection required for core functionality (except for initial spaCy model download)
 
 ## Installation
@@ -99,6 +100,8 @@ options:
   --format {json,csv,table}
                         Output format for the analysis results (json, csv, or table, default: table).
   --silent              Suppress all non-essential output, including logging messages.
+  --watch               Monitor the file or directory and re-run analysis on every change.
+  --debug               Enable debug logging for troubleshooting.
 ```
 
 ## Examples
@@ -137,6 +140,24 @@ kratio ./content/ --analysis_type words
 
 ```bash
 kratio example.txt --format json
+```
+
+### Watch a file for changes and re-analyze automatically
+
+```bash
+kratio example.txt --watch
+```
+
+### Watch with debug logging enabled
+
+```bash
+kratio example.txt --watch --debug
+```
+
+### Watch a directory for changes
+
+```bash
+kratio ./content/ --watch
 ```
 
 ## Output Formats
@@ -200,6 +221,7 @@ This software uses the following open source packages:
 - [Matplotlib](https://matplotlib.org/) - Comprehensive library for creating visualizations
 - [Loguru](https://github.com/Delgan/loguru) - Python logging made simple
 - [Tabulate](https://github.com/astanin/python-tabulate) - Pretty-print tabular data
+- [Watchdog](https://github.com/gorakhargosh/watchdog) - API and shell utilities to monitor file system events
 
 ## License
 

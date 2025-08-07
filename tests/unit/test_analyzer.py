@@ -1,6 +1,7 @@
+from unittest.mock import patch
+
 import pandas as pd
 import pytest
-from unittest.mock import patch, MagicMock
 
 # Import the function to be tested
 from kratio.core.analyzer import analyze_text_noun_chunks, analyze_text_words
@@ -14,6 +15,7 @@ def mock_word_analyzer_analyze():
     with patch("kratio.core.analyzer.WordAnalyzer.analyze") as mock_analyze:
         yield mock_analyze
 
+
 @pytest.fixture
 def mock_noun_chunk_analyzer_analyze():
     """
@@ -21,6 +23,7 @@ def mock_noun_chunk_analyzer_analyze():
     """
     with patch("kratio.core.analyzer.NounChunkAnalyzer.analyze") as mock_analyze:
         yield mock_analyze
+
 
 def test_analyze_text_words_basic(mock_word_analyzer_analyze):
     """
@@ -127,6 +130,7 @@ def test_analyze_text_words_empty_lemma_after_strip(mock_word_analyzer_analyze):
     mock_word_analyzer_analyze.assert_called_once_with(text)
     pd.testing.assert_frame_equal(df, expected_df)
 
+
 def test_analyze_text_noun_chunks_basic(mock_noun_chunk_analyzer_analyze):
     """
     Tests analyze_text_noun_chunks with a basic sentence.
@@ -156,7 +160,7 @@ def test_analyze_text_noun_chunks_empty_string(mock_noun_chunk_analyzer_analyze)
     # Arrange
     text = ""
     expected_df = pd.DataFrame(
-        {"NounChunkFrequency": pd.Series(dtype=int), "NounChunkDensity": pd.Series(dtype=float)}
+        {"NounChunkFrequency": pd.Series(dtype=int), "NounChunkDensity": pd.Series(dtype=float)},
     )
     expected_df.index.name = "Keyword"
     mock_noun_chunk_analyzer_analyze.return_value = expected_df

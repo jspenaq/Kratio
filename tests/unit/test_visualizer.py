@@ -3,9 +3,6 @@ from unittest.mock import MagicMock, patch
 import pandas as pd
 import pytest
 
-import pandas as pd
-import pytest
-from unittest.mock import MagicMock, patch
 from kratio.constants import ANALYSIS_TYPE_NOUN_CHUNKS, ANALYSIS_TYPE_WORDS
 from kratio.visualization.visualizer import (
     display_plot,
@@ -16,13 +13,18 @@ from kratio.visualization.visualizer import (
 
 @pytest.fixture
 def mock_plot_modules():
-    with patch("matplotlib.pyplot.subplots") as mock_subplots, patch(
-        "seaborn.barplot"
-    ) as mock_barplot, patch(
-        "matplotlib.pyplot.tight_layout"
-    ) as mock_tight_layout, patch(
-        "matplotlib.pyplot.show"
-    ) as mock_show:
+    with (
+        patch("matplotlib.pyplot.subplots") as mock_subplots,
+        patch(
+            "seaborn.barplot",
+        ) as mock_barplot,
+        patch(
+            "matplotlib.pyplot.tight_layout",
+        ) as mock_tight_layout,
+        patch(
+            "matplotlib.pyplot.show",
+        ) as mock_show,
+    ):
         mock_fig = MagicMock()
         mock_ax = MagicMock()
         mock_subplots.return_value = (mock_fig, mock_ax)

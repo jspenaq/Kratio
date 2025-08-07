@@ -74,6 +74,7 @@ def test_read_text_pure_raises_other_exception(monkeypatch):
     assert "An error occurred while reading the file: Permission denied" in str(excinfo.value)
     mock_open.assert_called_once()
 
+
 def test_read_text_file_with_str_path(tmp_path):
     """
     Tests that read_text_file successfully reads content from an existing file

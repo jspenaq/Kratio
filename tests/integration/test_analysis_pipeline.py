@@ -22,7 +22,7 @@ def test_complete_analysis_pipeline():
 
     # Create a mock args object similar to what would be parsed from CLI
     args = Namespace(
-        file_path=temp_file_path,
+        path=temp_file_path,
         analysis_type=ANALYSIS_TYPE_WORDS,
         top_n=5,
         output=str(temp_output_path),

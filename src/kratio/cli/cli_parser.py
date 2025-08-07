@@ -10,8 +10,12 @@ def parse_arguments() -> argparse.Namespace:
     Returns:
         argparse.Namespace: An object containing the parsed arguments.
     """
-    parser = argparse.ArgumentParser(description="Analyze keyword density in a text file.")
-    parser.add_argument("file_path", type=str, help="The path to the text file.")
+    parser = argparse.ArgumentParser(description="Analyze keyword density in a text file or directory.")
+    parser.add_argument(
+        "path",
+        type=str,
+        help="The path to the text file or directory to analyze.",
+    )
     parser.add_argument(
         "--analysis_type",
         type=str,

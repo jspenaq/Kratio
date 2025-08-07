@@ -3,11 +3,28 @@ from pathlib import Path
 from kratio.exceptions import FileReadError
 
 
+def is_directory(path: str) -> bool:
+    """
+    Checks if a given path is a directory.
+    """
+    return Path(path).is_dir()
+
+
+def get_files_from_directory(directory_path: str, supported_extensions: list[str]) -> list[Path]:
+    """
+    Scans a directory and returns a list of files with supported extensions.
+    """
+    return [p for p in Path(directory_path).rglob("*") if p.is_file() and p.suffix in supported_extensions]
+
+
 def _read_text(file_path: Path | str) -> str:
     """
     Reads a text file and returns its content as a string.
     Raises FileReadError on failure.
     """
+    if is_directory(str(file_path)):
+        raise FileReadError(f"Path '{file_path}' is a directory, not a file.")
+
     try:
         if isinstance(file_path, str):
             file_path = Path(file_path)

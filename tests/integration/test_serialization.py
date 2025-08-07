@@ -1,5 +1,4 @@
 import json
-import os
 import tempfile
 from pathlib import Path
 
@@ -37,7 +36,7 @@ def test_serialization_to_different_formats():
 
         # Assert - JSON
         assert json_output_path.exists()
-        with open(json_output_path) as f:
+        with json_output_path.open() as f:
             json_data = json.load(f)
         assert isinstance(json_data, list)
         assert len(json_data) > 0
@@ -51,6 +50,6 @@ def test_serialization_to_different_formats():
     finally:
         # Clean up temporary files
         if csv_output_path.exists():
-            os.unlink(csv_output_path)
+            csv_output_path.unlink()
         if json_output_path.exists():
-            os.unlink(json_output_path)
+            json_output_path.unlink()

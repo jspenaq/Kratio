@@ -136,18 +136,17 @@ def test_file_watcher_start_watching_file(mock_observer_class):
 
     callback = MagicMock()
 
-    with patch("kratio.utils.watch.is_directory", return_value=False):
-        with patch("pathlib.Path.exists", return_value=True):
-            # Act
-            watcher = FileWatcher()
-            watcher.start_watching("test.txt", callback)
+    with patch("kratio.utils.watch.is_directory", return_value=False), patch("pathlib.Path.exists", return_value=True):
+        # Act
+        watcher = FileWatcher()
+        watcher.start_watching("test.txt", callback)
 
-            # Assert
-            assert watcher.watching is True
-            assert watcher.observer == mock_observer
-            assert isinstance(watcher.handler, KratioEventHandler)
-            mock_observer.schedule.assert_called_once()
-            mock_observer.start.assert_called_once()
+        # Assert
+        assert watcher.watching is True
+        assert watcher.observer == mock_observer
+        assert isinstance(watcher.handler, KratioEventHandler)
+        mock_observer.schedule.assert_called_once()
+        mock_observer.start.assert_called_once()
 
 
 @patch("kratio.utils.watch.Observer")
@@ -159,21 +158,20 @@ def test_file_watcher_start_watching_directory(mock_observer_class):
 
     callback = MagicMock()
 
-    with patch("kratio.utils.watch.is_directory", return_value=True):
-        with patch("pathlib.Path.exists", return_value=True):
-            # Act
-            watcher = FileWatcher()
-            watcher.start_watching("test_dir", callback)
+    with patch("kratio.utils.watch.is_directory", return_value=True), patch("pathlib.Path.exists", return_value=True):
+        # Act
+        watcher = FileWatcher()
+        watcher.start_watching("test_dir", callback)
 
-            # Assert
-            assert watcher.watching is True
-            assert watcher.observer == mock_observer
-            assert isinstance(watcher.handler, KratioEventHandler)
-            mock_observer.schedule.assert_called_once()
-            # Check that recursive=True was passed for directory watching
-            _, kwargs = mock_observer.schedule.call_args
-            assert kwargs.get("recursive") is True
-            mock_observer.start.assert_called_once()
+        # Assert
+        assert watcher.watching is True
+        assert watcher.observer == mock_observer
+        assert isinstance(watcher.handler, KratioEventHandler)
+        mock_observer.schedule.assert_called_once()
+        # Check that recursive=True was passed for directory watching
+        _, kwargs = mock_observer.schedule.call_args
+        assert kwargs.get("recursive") is True
+        mock_observer.start.assert_called_once()
 
 
 @patch("kratio.utils.watch.Observer")
@@ -201,17 +199,16 @@ def test_file_watcher_stop_watching(mock_observer_class):
 
     callback = MagicMock()
 
-    with patch("kratio.utils.watch.is_directory", return_value=True):
-        with patch("pathlib.Path.exists", return_value=True):
-            # Act
-            watcher = FileWatcher()
-            watcher.start_watching("test_dir", callback)
-            watcher.stop_watching()
+    with patch("kratio.utils.watch.is_directory", return_value=True), patch("pathlib.Path.exists", return_value=True):
+        # Act
+        watcher = FileWatcher()
+        watcher.start_watching("test_dir", callback)
+        watcher.stop_watching()
 
-            # Assert
-            assert watcher.watching is False
-            mock_observer.stop.assert_called_once()
-            mock_observer.join.assert_called_once()
+        # Assert
+        assert watcher.watching is False
+        mock_observer.stop.assert_called_once()
+        mock_observer.join.assert_called_once()
 
 
 @patch("kratio.utils.watch.Observer")
@@ -223,14 +220,13 @@ def test_file_watcher_cleanup_on_del(mock_observer_class):
 
     callback = MagicMock()
 
-    with patch("kratio.utils.watch.is_directory", return_value=True):
-        with patch("pathlib.Path.exists", return_value=True):
-            # Act
-            watcher = FileWatcher()
-            watcher.start_watching("test_dir", callback)
-            # Simulate deletion
-            watcher.__del__()
+    with patch("kratio.utils.watch.is_directory", return_value=True), patch("pathlib.Path.exists", return_value=True):
+        # Act
+        watcher = FileWatcher()
+        watcher.start_watching("test_dir", callback)
+        # Simulate deletion
+        watcher.__del__()
 
-            # Assert
-            mock_observer.stop.assert_called_once()
-            mock_observer.join.assert_called_once()
+        # Assert
+        mock_observer.stop.assert_called_once()
+        mock_observer.join.assert_called_once()

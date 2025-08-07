@@ -100,8 +100,8 @@ def test_display_plot(mock_plot_modules):
     mock_plot_modules["show"].assert_called_once()
 
 
-def test_persist_plot():
+def test_persist_plot(tmp_path):
     mock_fig = MagicMock()
-    save_path = "/tmp/test_plot.png"
-    persist_plot(mock_fig, save_path)
-    mock_fig.savefig.assert_called_once_with(save_path)
+    save_path = tmp_path / "test_plot.png"
+    persist_plot(mock_fig, str(save_path))
+    mock_fig.savefig.assert_called_once_with(str(save_path))

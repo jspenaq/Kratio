@@ -1,4 +1,3 @@
-import os
 import tempfile
 from argparse import Namespace
 from pathlib import Path
@@ -63,10 +62,10 @@ def test_complete_analysis_pipeline():
 
     finally:
         # Clean up temporary files
-        if os.path.exists(temp_file_path):
-            os.unlink(temp_file_path)
+        if Path(temp_file_path).exists():
+            Path(temp_file_path).unlink()
         if temp_output_path.exists():
-            os.unlink(temp_output_path)
+            temp_output_path.unlink()
         noun_output_path = Path(str(temp_output_path).replace(".csv", "_noun.csv"))
         if noun_output_path.exists():
-            os.unlink(noun_output_path)
+            noun_output_path.unlink()

@@ -179,6 +179,9 @@ cython_debug/
 # Roo Code
 .roo/
 
+# Kilo Code
+.kilocode/
+
 # macOS
 .DS_Store
 .AppleDouble

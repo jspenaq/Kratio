@@ -3,7 +3,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 
 # Import the function to be tested
-from kratio.core.analyzer import analyze_text_words
+from kratio.core.analyzer import analyze_text_noun_chunks, analyze_text_words
 
 
 @pytest.fixture
@@ -14,6 +14,13 @@ def mock_word_analyzer_analyze():
     with patch("kratio.core.analyzer.WordAnalyzer.analyze") as mock_analyze:
         yield mock_analyze
 
+@pytest.fixture
+def mock_noun_chunk_analyzer_analyze():
+    """
+    Mocks the analyze method of NounChunkAnalyzer to control its return value directly.
+    """
+    with patch("kratio.core.analyzer.NounChunkAnalyzer.analyze") as mock_analyze:
+        yield mock_analyze
 
 def test_analyze_text_words_basic(mock_word_analyzer_analyze):
     """
@@ -118,4 +125,45 @@ def test_analyze_text_words_empty_lemma_after_strip(mock_word_analyzer_analyze):
 
     # Assert
     mock_word_analyzer_analyze.assert_called_once_with(text)
+    pd.testing.assert_frame_equal(df, expected_df)
+
+def test_analyze_text_noun_chunks_basic(mock_noun_chunk_analyzer_analyze):
+    """
+    Tests analyze_text_noun_chunks with a basic sentence.
+    """
+    # Arrange
+    text = "The quick brown fox jumps over the lazy dog."
+    expected_data = {
+        "NounChunkFrequency": {"the quick brown fox": 1, "the lazy dog": 1},
+        "NounChunkDensity": {"the quick brown fox": 50.0, "the lazy dog": 50.0},
+    }
+    expected_df = pd.DataFrame(expected_data)
+    expected_df.index.name = "Keyword"
+    mock_noun_chunk_analyzer_analyze.return_value = expected_df
+
+    # Act
+    df = analyze_text_noun_chunks(text)
+
+    # Assert
+    mock_noun_chunk_analyzer_analyze.assert_called_once_with(text)
+    pd.testing.assert_frame_equal(df, expected_df)
+
+
+def test_analyze_text_noun_chunks_empty_string(mock_noun_chunk_analyzer_analyze):
+    """
+    Tests analyze_text_noun_chunks with an empty input string.
+    """
+    # Arrange
+    text = ""
+    expected_df = pd.DataFrame(
+        {"NounChunkFrequency": pd.Series(dtype=int), "NounChunkDensity": pd.Series(dtype=float)}
+    )
+    expected_df.index.name = "Keyword"
+    mock_noun_chunk_analyzer_analyze.return_value = expected_df
+
+    # Act
+    df = analyze_text_noun_chunks(text)
+
+    # Assert
+    mock_noun_chunk_analyzer_analyze.assert_called_once_with(text)
     pd.testing.assert_frame_equal(df, expected_df)

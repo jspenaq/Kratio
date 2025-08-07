@@ -38,6 +38,9 @@ dev = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+
+# Ruff configuration
+
 [tool.ruff]
 line-length = 120
 
@@ -66,3 +69,25 @@ select = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101", "ANN001", "ANN201", "ANN202", "E402", "E501", "E711"]
+
+
+# Coverage configuration
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+omit = [
+    "tests/*",  # Exclude all test files
+    "*/__init__.py",  # Exclude __init__.py files
+    "*/migrations/*",  # Exclude Django migrations
+    "*/settings.py",  # Exclude Django settings
+    "*/wsgi.py",  # Exclude WSGI files
+    "*/asgi.py",  # Exclude ASGI files
+]
+
+show_missing = true
+
+[tool.coverage.html]
+directory = "coverage_html_report"
